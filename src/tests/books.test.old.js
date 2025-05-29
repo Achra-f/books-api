@@ -1,12 +1,14 @@
 import supertest from 'supertest';
 import app from '../app.js';
 import mongoose from 'mongoose';
-import { connectDb } from "../db.js";
+import { connectDB } from "../config/db.js";
+import dotenv from "dotenv";
 
+dotenv.config();
 const request = supertest(app);
 
 beforeAll(async () => {
-    await connectDb(process.env.MONGODB_URI_TEST || process.env.MONGODB_URI);
+    await connectDB(process.env.MONGODB_URI_TEST || process.env.MONGODB_URI);
 });
 
 afterAll(async () => {
@@ -46,7 +48,7 @@ describe('Books API', () => {
 
     it('DELETE /books/:id - should delete the book', async () => {
         const res = await request.delete(`/books/${createdBookId}`);
-        expect(res.statusCode).toBe(200); // Updated from 204 to 200
+        expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('message', 'Book deleted successfully');
     });
 });

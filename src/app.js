@@ -1,9 +1,7 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import helmet from 'helmet';
-import booksRouters from './routes/books.js';
-
-dotenv.config();
+import booksRoutes from './routes/books.js';
+import authRoutes from './routes/auth.js';
 
 const app = express();
 
@@ -11,12 +9,13 @@ app.use(helmet());
 app.use(express.json());
 
 // Routes
-app.use('/books', booksRouters);
+app.use('/books', booksRoutes);
+app.use('/auth', authRoutes);
 
-// Error handling middleware
+// Error handler
 app.use((err, req, res, next) => {
-    console.log(err);
-    res.status(500).json({ error: "Something went wrong" });
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something broke!' });
 });
 
 export default app;

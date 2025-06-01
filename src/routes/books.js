@@ -13,7 +13,7 @@ import {
 const router = express.Router();
 
 // Protect all routes below
-// router.use(authMiddleware);
+router.use(authMiddleware);
 
 // Helper for async error handling
 const asyncHandler = fn => (req, res, next) =>

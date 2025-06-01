@@ -1,43 +1,24 @@
-import { body } from "express-validator";
+import { z } from 'zod';
 
-export const bookPostValidationRules = [
-    body('title')
-        .trim()
-        .notEmpty().withMessage('Title is required').bail()
-        .isLength({ min: 2, max: 100 }).withMessage('Title seems too short or too long')
-        .matches(/^[a-zA-Z0-9À-ž\s'"\-:,.!?()]+$/).withMessage("Title name contains invalid characters")
-        .escape(),
+// POST new Book Validation Rules
+export const bookCreateSchema = z.object({
+  title: z
+    .string()
+    .min(1, 'Title is required')
+    .max(150, 'Title must be 150 characters or less'),
+  author: z
+    .string()
+    .min(1, 'Author is required')
+    .max(100, 'Author name must be 100 characters or less'),
+  year: z.number().int().gte(0, 'Year must be a positive integer'),
+  genre: z.string().optional(),
+  coverImageUrl: z.string().url('Must be a valid URL').optional(),
+  readStatus: z.enum(['reading', 'finished', 'want to read']).optional(),
+  addedBy: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/, 'Invalid user ID')
+    .optional(),
+});
 
-    body("author")
-        .trim()
-        .notEmpty().withMessage('Author is required').bail()
-        .isLength({ min: 2, max: 50 }).withMessage('Author seems too short or too long')
-        .matches(/^[a-zA-ZÀ-ž\s'-]+$/).withMessage('Author name contains invalid characters')
-        .escape(),
-
-    body('year')
-        .notEmpty().withMessage('Year is required').bail()
-        .isInt({ min: 0 }).withMessage('Year must be a valid number')
-        .escape(),
-];
-
-export const bookPatchValidationRules = [
-    body('title')
-        .optional()
-        .trim()
-        .isLength({ min: 2, max: 100 }).withMessage('Title seems too short or too long')
-        .matches(/^[a-zA-Z0-9À-ž\s'"\-:,.!?()]+$/).withMessage("Title contains invalid characters")
-        .escape(),
-
-    body('author')
-        .optional()
-        .trim()
-        .isLength({ min: 2, max: 50 }).withMessage('Author seems too short or too long')
-        .matches(/^[a-zA-ZÀ-ž\s'-]+$/).withMessage('Author contains invalid characters')
-        .escape(),
-
-    body('year')
-        .optional()
-        .isInt({ min: 0 }).withMessage('Year must be a valid number')
-        .escape(),
-];
+// PATCH existing Book (same as POST but optional fields)
+export const bookUpdateSchema = bookCreateSchema.partial();

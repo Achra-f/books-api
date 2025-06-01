@@ -9,13 +9,13 @@ app.use(helmet());
 app.use(express.json());
 
 // Routes
-app.use('/books', booksRoutes);
-app.use('/auth', authRoutes);
+app.use('/api/books', booksRoutes);
+app.use('/api/auth', authRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Something broke!' });
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something broke!' });
 });
 
 export default app;

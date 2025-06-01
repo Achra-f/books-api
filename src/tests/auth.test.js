@@ -23,31 +23,30 @@ describe('Auth API (username + password)', () => {
     };
 
     afterAll(async () => {
-        // Clean up the test user
         await User.deleteOne({ username: testUser.username });
     });
 
     it('POST /signup - should register a new user', async () => {
-        const res = await request.post('/signup').send(testUser);
+        const res = await request.post('/auth/signup').send(testUser);
         expect(res.statusCode).toBe(201);
         expect(res.body).toHaveProperty('message');
         expect(res.body.message).toMatch(/success/i);
     });
 
     it('POST /signup - should fail for duplicate username', async () => {
-        const res = await request.post('/signup').send(testUser);
+        const res = await request.post('/auth/signup').send(testUser);
         expect(res.statusCode).toBe(400);
         expect(res.body).toHaveProperty('error');
     });
 
     it('POST /login - should authenticate existing user', async () => {
-        const res = await request.post('/login').send(testUser);
+        const res = await request.post('/auth/login').send(testUser);
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('token');
     });
 
     it('POST /login - should fail with incorrect password', async () => {
-        const res = await request.post('/login').send({
+        const res = await request.post('/auth/login').send({
             username: testUser.username,
             password: 'wrongPass',
         });
@@ -56,7 +55,7 @@ describe('Auth API (username + password)', () => {
     });
 
     it('POST /login - should fail for non-existent user', async () => {
-        const res = await request.post('/login').send({
+        const res = await request.post('/auth/login').send({
             username: 'ghostuser',
             password: 'irrelevant',
         });

@@ -81,4 +81,31 @@ describe('Books API', () => {
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('message', 'Book deleted successfully');
     });
+
+    it('POST /books - should return 400 if fields are missing', async () => {
+        const res = await request
+            .post('/books')
+            .set('Authorization', `Bearer ${authToken}`)
+            .send({ title: '', author: '', year: 'notanumber' });
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toHaveProperty('error');
+    });
+
+    it('PATCH /books/:id - should return 400 for invalid year', async () => {
+        const newBook = { title: 'Invalid Patch', author: 'X', year: 2020 };
+        const createRes = await request
+            .post('/books')
+            .set('Authorization', `Bearer ${authToken}`)
+            .send(newBook);
+
+        const badUpdate = { year: 'NaN' };
+        const res = await request
+            .patch(`/books/${createRes.body._id}`)
+            .set('Authorization', `Bearer ${authToken}`)
+            .send(badUpdate);
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toHaveProperty('error');
+    });
 });

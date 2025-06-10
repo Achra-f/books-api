@@ -1,12 +1,24 @@
 import express from 'express';
 import helmet from 'helmet';
+import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import booksRoutes from './routes/books.js';
 import authRoutes from './routes/auth.js';
 
 const app = express();
 
+// Middlewares
 app.use(helmet());
+app.use(cors());
 app.use(express.json());
+
+// Rate Limiter
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: 'Rate limit exceeded' },
+});
+app.use(limiter);
 
 // Routes
 app.use('/api/books', booksRoutes);

@@ -19,9 +19,17 @@ export const signupController = async (req, res) => {
 
     const user = await User.create({ email, password: hashedPassword });
 
-    res
-      .status(201)
-      .json({ message: 'User successfully created', userId: user._id });
+    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+      },
+    });
   } catch (err) {
     console.error('Signup error:', err);
     res.status(500).json({ error: 'Server Error' });

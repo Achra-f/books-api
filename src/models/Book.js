@@ -8,7 +8,7 @@ const bookSchema = new mongoose.Schema(
     genre: { type: String },
     coverImageUrl: { type: String },
     readStatus: { type: String, enum: ['reading', 'finished', 'want to read'] },
-    addedBy: { type: mongoose.Types.ObjectId, ref: 'User' },
+    addedBy: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
   },
   { timestamps: true }
 );

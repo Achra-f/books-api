@@ -45,14 +45,21 @@ export const getAllBooks = async (req, res) => {
   res.status(200).json(books);
 };
 
-// Get book by ID
+// Get book by ID for Owner
 export const getBookById = async (req, res) => {
-  const book = await Book.findById(req.params.id);
-  if (!book) {
-    return res.status(404).json({ error: 'Book not found' });
-  }
+  try {
+    const book = await Book.findById(req.params.id);
+    if (!book) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
 
-  res.status(200).json(book);
+    if (book.addedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    res.status(200).json(book);
+  } catch (err) {
+    return res.status(500).json({ error: 'Server error' });
+  }
 };
 
 // Create new book
@@ -63,6 +70,7 @@ export const createBook = async (req, res) => {
   };
   const newBook = await Book.create(bookData);
   res.status(201).json(newBook);
+  console.log('req.user:', req.user);
 };
 
 // Update book
@@ -95,7 +103,7 @@ export const deleteBook = async (req, res) => {
       .json({ error: 'You do not have permission to delete this book' });
   }
 
-  await book.remove();
+  await book.deleteOne();
 
   res.status(200).json({ message: 'Book deleted successfully', book });
 };

@@ -11,11 +11,26 @@ app.set('trust proxy', 1);
 
 // Middlewares
 app.use(helmet());
+const allowedOrigins = [
+  'https://books-api-1jwf.onrender.com',
+  'http://192.168.129.33:5173',
+];
+
 app.use(
   cors({
-    origin: 'https://books-api-1jwf.onrender.com',
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg =
+          'The CORS policy for this site does not allow access from the specified Origin.';
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
+    credentials: true,
   })
 );
+
 app.use(express.json());
 
 // Rate Limiter

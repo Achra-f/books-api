@@ -14,6 +14,7 @@ app.use(helmet());
 const allowedOrigins = [
   'https://books-api-1jwf.onrender.com',
   'http://192.168.129.33:5173',
+  'https://book-tracker-cd8y.onrender.com',
 ];
 
 app.use(

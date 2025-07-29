@@ -11,7 +11,11 @@ app.set('trust proxy', 1);
 
 // Middlewares
 app.use(helmet());
-app.use(cors());
+app.use(
+  cors({
+    origin: 'https://books-api-1jwf.onrender.com',
+  })
+);
 app.use(express.json());
 
 // Rate Limiter

@@ -4,8 +4,38 @@ import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import booksRoutes from './routes/books.js';
 import authRoutes from './routes/auth.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 
 const app = express();
+
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Book Tracker API',
+      version: '1.0.0',
+      description: 'API for managing books and authentication',
+    },
+    servers: [
+      {
+        url: 'https://books-api-1jwf.onrender.com',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  },
+  apis: ['./src/routes/*.js'],
+};
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 app.set('trust proxy', 1);
 
@@ -43,6 +73,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Routes
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/books', booksRoutes);
 app.use('/api/auth', authRoutes);
 
